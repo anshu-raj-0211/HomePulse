@@ -2,32 +2,43 @@ import {
   FaUser,
   FaPhone,
   FaTint,
-  FaPills,
+  FaHeartbeat,
+  FaUserFriends,
   FaTrash,
   FaEdit,
 } from "react-icons/fa";
 
-function MemberCard({ member, onDelete, onEdit }) {
+function MemberCard({
+  member,
+  onDelete,
+  onEdit,
+}) {
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-lg">
+    <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-lg hover:border-blue-500 transition-all duration-300">
 
-      <div className="flex justify-between">
+      {/* Header */}
+      <div className="flex justify-between items-start">
 
         <div>
 
           <div className="flex items-center gap-3">
 
-            <FaUser className="text-blue-400 text-xl" />
+            <div className="bg-blue-600 p-3 rounded-2xl">
+              <FaUser className="text-white text-lg" />
+            </div>
 
-            <h2 className="text-2xl font-bold text-white">
-              {member.name}
-            </h2>
+            <div>
+              <h2 className="text-2xl font-bold text-white">
+                {member.name}
+              </h2>
+
+              <div className="flex items-center gap-2 mt-1 text-blue-400">
+                <FaUserFriends />
+                <span>{member.relationship}</span>
+              </div>
+            </div>
 
           </div>
-
-          <p className="text-slate-400 mt-2">
-            Age: {member.age}
-          </p>
 
         </div>
 
@@ -35,37 +46,41 @@ function MemberCard({ member, onDelete, onEdit }) {
 
           <button
             onClick={() => onEdit(member)}
-            className="text-blue-400"
+            className="text-blue-400 hover:text-blue-300 transition"
           >
-            <FaEdit />
+            <FaEdit size={18} />
           </button>
 
           <button
             onClick={() => onDelete(member.id)}
-            className="text-red-500"
+            className="text-red-500 hover:text-red-400 transition"
           >
-            <FaTrash />
+            <FaTrash size={18} />
           </button>
 
         </div>
 
       </div>
 
-      <div className="mt-5 space-y-3">
+      {/* Details */}
+
+      <div className="mt-6 space-y-4">
 
         <div className="flex items-center gap-3 text-slate-300">
-          <FaPhone />
-          {member.phone}
+          <FaPhone className="text-green-400" />
+          <span>{member.phone}</span>
         </div>
 
         <div className="flex items-center gap-3 text-slate-300">
-          <FaTint />
-          Blood Group: {member.bloodGroup}
+          <FaTint className="text-red-400" />
+          <span>Blood Group: {member.bloodGroup}</span>
         </div>
 
         <div className="flex items-center gap-3 text-slate-300">
-          <FaPills />
-          {member.medicines} Medicines
+          <FaHeartbeat className="text-pink-400" />
+          <span>
+            {member.condition || "No medical condition"}
+          </span>
         </div>
 
       </div>

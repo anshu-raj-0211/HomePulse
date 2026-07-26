@@ -1,107 +1,121 @@
 import { useState } from "react";
 
-function AddMemberModal({ isOpen, onClose, onAddMember }) {
+function AddMemberModal({
+  isOpen,
+  onClose,
+  onAddMember,
+}) {
   const [name, setName] = useState("");
-  const [age, setAge] = useState("");
+  const [relationship, setRelationship] = useState("");
   const [phone, setPhone] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
-  const [medicines, setMedicines] = useState("");
+  const [condition, setCondition] = useState("");
 
   if (!isOpen) return null;
 
-  const handleSubmit = () => {
+  const handleSave = async () => {
     if (
-      !name ||
-      !age ||
-      !phone ||
-      !bloodGroup ||
-      !medicines
+      !name.trim() ||
+      !relationship.trim() ||
+      !phone.trim() ||
+      !bloodGroup.trim()
     ) {
-      alert("Please fill all fields.");
+      alert("Please fill all required fields.");
       return;
     }
 
-    onAddMember({
-      id: Date.now(),
-      name,
-      age,
-      phone,
+    await onAddMember({
+      name: name.trim(),
+      relationship: relationship.trim(),
+      phone: phone.trim(),
       bloodGroup,
-      medicines,
+      condition: condition.trim(),
     });
 
     setName("");
-    setAge("");
+    setRelationship("");
     setPhone("");
     setBloodGroup("");
-    setMedicines("");
+    setCondition("");
 
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50">
 
-      <div className="bg-slate-900 w-[90%] max-w-md rounded-3xl p-6">
+      <div className="bg-slate-900 border border-slate-700 rounded-3xl w-[90%] max-w-md p-6">
 
         <h2 className="text-2xl font-bold text-white mb-6">
           Add Family Member
         </h2>
 
-        <input
-          type="text"
-          placeholder="Full Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full bg-slate-800 rounded-xl p-3 mb-4 text-white"
-        />
+        <div className="space-y-4">
 
-        <input
-          type="number"
-          placeholder="Age"
-          value={age}
-          onChange={(e) => setAge(e.target.value)}
-          className="w-full bg-slate-800 rounded-xl p-3 mb-4 text-white"
-        />
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full bg-slate-800 text-white p-3 rounded-xl border border-slate-700 outline-none focus:border-blue-500"
+          />
 
-        <input
-          type="text"
-          placeholder="Phone Number"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="w-full bg-slate-800 rounded-xl p-3 mb-4 text-white"
-        />
+          <input
+            type="text"
+            placeholder="Relationship"
+            value={relationship}
+            onChange={(e) => setRelationship(e.target.value)}
+            className="w-full bg-slate-800 text-white p-3 rounded-xl border border-slate-700 outline-none focus:border-blue-500"
+          />
 
-        <input
-          type="text"
-          placeholder="Blood Group"
-          value={bloodGroup}
-          onChange={(e) => setBloodGroup(e.target.value)}
-          className="w-full bg-slate-800 rounded-xl p-3 mb-4 text-white"
-        />
+          <input
+            type="tel"
+            placeholder="Phone Number"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="w-full bg-slate-800 text-white p-3 rounded-xl border border-slate-700 outline-none focus:border-blue-500"
+          />
 
-        <input
-          type="number"
-          placeholder="Medicines Count"
-          value={medicines}
-          onChange={(e) => setMedicines(e.target.value)}
-          className="w-full bg-slate-800 rounded-xl p-3 mb-6 text-white"
-        />
+          <select
+            value={bloodGroup}
+            onChange={(e) => setBloodGroup(e.target.value)}
+            className="w-full bg-slate-800 text-white p-3 rounded-xl border border-slate-700 outline-none focus:border-blue-500"
+          >
+            <option value="">Select Blood Group</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
 
-        <div className="flex gap-3">
+          <textarea
+            rows="3"
+            placeholder="Medical Condition (Optional)"
+            value={condition}
+            onChange={(e) => setCondition(e.target.value)}
+            className="w-full bg-slate-800 text-white p-3 rounded-xl border border-slate-700 outline-none resize-none focus:border-blue-500"
+          />
+
+        </div>
+
+        <div className="flex gap-3 mt-8">
 
           <button
             onClick={onClose}
-            className="flex-1 py-3 rounded-xl bg-slate-700 text-white"
+            className="flex-1 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 transition"
           >
             Cancel
           </button>
 
           <button
-            onClick={handleSubmit}
-            className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={handleSave}
+            className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 transition"
           >
-            Add Member
+            Save Member
           </button>
 
         </div>

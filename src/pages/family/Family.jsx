@@ -1,93 +1,88 @@
 import { useState } from "react";
 
+import useFamily from "../../hooks/useFamily";
+
 import FamilyHeader from "../../components/family/FamilyHeader";
 import MemberCard from "../../components/family/MemberCard";
 import AddMemberModal from "../../components/family/AddMemberModal";
 import EditMemberModal from "../../components/family/EditMemberModal";
-
 function Family() {
-  const [members, setMembers] = useState([
-    {
-      id: 1,
-      name: "Rahul Singh",
-      age: 52,
-      phone: "9876543210",
-      bloodGroup: "B+",
-      medicines: 3,
-    },
-    {
-      id: 2,
-      name: "Priya Singh",
-      age: 48,
-      phone: "9876501234",
-      bloodGroup: "O+",
-      medicines: 2,
-    },
-  ]);
+  const {
+    familyMembers,
+    loading,
+    createFamilyMember,
+    editFamilyMember,
+    removeFamilyMember,
+  } = useFamily();
 
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [openAddModal, setOpenAddModal] = useState(false);
+
+  const [openEditModal, setOpenEditModal] = useState(false);
+
   const [selectedMember, setSelectedMember] = useState(null);
 
-  // Add Member
-  const handleAddMember = (member) => {
-    setMembers((prev) => [...prev, member]);
+  const handleAddMember = async (member) => {
+    await createFamilyMember(member);
   };
 
-  // Delete Member
-  const handleDeleteMember = (id) => {
-    setMembers((prev) =>
-      prev.filter((member) => member.id !== id)
-    );
+  const handleDeleteMember = async (id) => {
+    await removeFamilyMember(id);
   };
 
-  // Edit Member
   const handleEditClick = (member) => {
     setSelectedMember(member);
-    setShowEditModal(true);
+    setOpenEditModal(true);
   };
 
-  const handleSaveMember = (updatedMember) => {
-    setMembers((prev) =>
-      prev.map((member) =>
-        member.id === updatedMember.id
-          ? updatedMember
-          : member
-      )
+  const handleSaveMember = async (member) => {
+    await editFamilyMember(member);
+
+    setOpenEditModal(false);
+  };
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-slate-950 flex justify-center items-center text-white text-xl">
+        Loading Family...
+      </main>
     );
-
-    setShowEditModal(false);
-  };
+  }
 
   return (
     <main className="min-h-screen bg-slate-950 text-white p-6">
 
       <FamilyHeader
-        onAddClick={() => setShowAddModal(true)}
+        onAddClick={() => setOpenAddModal(true)}
       />
 
       <div className="space-y-5 mt-8">
 
-        {members.map((member) => (
-          <MemberCard
-            key={member.id}
-            member={member}
-            onDelete={handleDeleteMember}
-            onEdit={handleEditClick}
-          />
-        ))}
+        {familyMembers.length > 0 ? (
+          familyMembers.map((member) => (
+            <MemberCard
+              key={member.id}
+              member={member}
+              onDelete={handleDeleteMember}
+              onEdit={handleEditClick}
+            />
+          ))
+        ) : (
+          <div className="text-center py-16 text-slate-400">
+            No family members added yet.
+          </div>
+        )}
 
       </div>
 
       <AddMemberModal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
+        isOpen={openAddModal}
+        onClose={() => setOpenAddModal(false)}
         onAddMember={handleAddMember}
       />
 
       <EditMemberModal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
+        isOpen={openEditModal}
+        onClose={() => setOpenEditModal(false)}
         member={selectedMember}
         onSave={handleSaveMember}
       />

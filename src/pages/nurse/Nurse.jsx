@@ -1,112 +1,60 @@
-import { useState } from "react";
+import { useEffect, useRef } from "react";
+
+import useGeminiChat from "../../hooks/useGeminiChat";
 
 import ChatHeader from "../../components/nurse/ChatHeader";
 import ChatMessage from "../../components/nurse/ChatMessage";
 import ChatInput from "../../components/nurse/ChatInput";
-import SuggestionCard from "../../components/nurse/SuggestionCard";
 
 function Nurse() {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: "bot",
-      message:
-        "👋 Hello! I'm your AI Health Companion. How can I help you today?",
-    },
-  ]);
+  const {
+    messages,
+    loading,
+    sendMessage,
+  } = useGeminiChat();
 
-  const [input, setInput] = useState("");
+  const bottomRef = useRef(null);
 
-  const suggestions = [
-    "💊 Explain this medicine",
-    "🤒 I have a fever",
-    "🤕 I have a headache",
-    "🥗 Healthy diet tips",
-  ];
-
-  const getBotReply = (text) => {
-    const msg = text.toLowerCase();
-
-    if (msg.includes("fever")) {
-      return "A fever can have many causes. Stay hydrated, monitor your temperature, and consult a healthcare professional if it is high or persistent.";
-    }
-
-    if (msg.includes("headache")) {
-      return "Headaches can occur due to stress, dehydration, lack of sleep, or illness. Drink water, rest, and seek medical advice if the pain is severe or unusual.";
-    }
-
-    if (msg.includes("diet")) {
-      return "A balanced diet includes fruits, vegetables, whole grains, lean protein, and adequate water. Try to avoid excessive processed foods.";
-    }
-
-    if (msg.includes("medicine")) {
-      return "Please tell me the medicine name, and I'll explain its common uses and general precautions.";
-    }
-
-    return "I understand your question. In the next version, I'll use Gemini AI to provide smarter and more personalized responses.";
-  };
-
-  const sendMessage = (text = input) => {
-    if (!text.trim()) return;
-
-    const userMessage = {
-      id: Date.now(),
-      sender: "user",
-      message: text,
-    };
-
-    const botMessage = {
-      id: Date.now() + 1,
-      sender: "bot",
-      message: getBotReply(text),
-    };
-
-    setMessages((prev) => [...prev, userMessage, botMessage]);
-    setInput("");
-  };
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages, loading]);
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white p-6">
+    <main className="bg-slate-950 flex flex-col h-[calc(100vh-80px)]">
 
       <ChatHeader />
 
-      <div className="mt-6 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 py-6">
 
-        {messages.map((message) => (
-          <ChatMessage
-            key={message.id}
-            sender={message.sender}
-            message={message.message}
-          />
-        ))}
+        <div className="max-w-4xl mx-auto space-y-4">
 
-      </div>
-
-      <div className="mt-8">
-
-        <h2 className="text-lg font-semibold mb-4">
-          Quick Questions
-        </h2>
-
-        <div className="grid gap-3">
-
-          {suggestions.map((item) => (
-            <SuggestionCard
-              key={item}
-              text={item}
-              onClick={sendMessage}
+          {messages.map((message) => (
+            <ChatMessage
+              key={message.id}
+              message={message}
             />
           ))}
+
+          {loading && (
+            <div className="bg-slate-800 text-slate-300 w-fit px-4 py-3 rounded-2xl animate-pulse">
+              AI Nurse is typing...
+            </div>
+          )}
+
+          <div ref={bottomRef} />
 
         </div>
 
       </div>
 
-      <ChatInput
-        value={input}
-        onChange={setInput}
-        onSend={() => sendMessage()}
-      />
+      <div className="border-t border-slate-800">
+        <ChatInput
+          onSend={sendMessage}
+          disabled={loading}
+        />
+      </div>
 
     </main>
   );
